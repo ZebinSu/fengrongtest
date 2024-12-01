@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toxicity Detector</title>
+</head>
+<body>
+    <h1>Toxicity Detection</h1>
+    <textarea id="inputText" rows="5" cols="50" placeholder="Enter text here..."></textarea><br>
+    <button id="submitButton">Submit</button>
+
+    <h2>Results</h2>
+    <p><strong>Toxicity Score:</strong> <span id="toxicityScore">N/A</span></p>
+    <p><strong>Predictions:</strong> <span id="predictions">N/A</span></p>
+    <p><strong>Topic:</strong> <span id="topic">N/A</span></p>
+    <p><strong>Sentiment:</strong> <span id="sentiment">N/A</span></p>
+
+    <script>
+        document.getElementById("submitButton").addEventListener("click", async () => {
+            const text = document.getElementById("inputText").value;
+            const response = await fetch("https://fastapi-app-280288253402.us-central1.run.app/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ text }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById("toxicityScore").innerText = data.toxicity_score.toFixed(2);
+                document.getElementById("predictions").innerText = JSON.stringify(data.predictions, null, 2);
+                document.getElementById("topic").innerText = data.topic;
+                document.getElementById("sentiment").innerText = data.sentiment;
+            } else {
+                alert("Error: " + response.statusText);
+            }
+        });
+    </script>
+</body>
+</html>
